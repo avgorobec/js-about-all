@@ -1,15 +1,15 @@
-function _createModal({title = 'Заголовок', closable = false, content = 'Content',width = '400px'}) {
+function _createModal({title = 'Заголовок', closable = false, content = 'Content', width = '400px'}) {
     const modal = document.createElement('div')
 
     modal.classList.add('vmodal')
     modal.insertAdjacentHTML('afterbegin', `
-        <div class="modal-overlay">
-            <div class="modal-window">
+        <div class="modal-overlay" data-close="true">
+            <div class="modal-window" style="width: ${width}">
                 <div class="modal-header">
                     <span class="modal-title">${title}</span>
-                    ${closable ? '<span class="modal-close">&times;</span>' : ''}
+                    ${closable ? '<span class="modal-close" data-close="true">&times;</span>' : ''}
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" data-content>
                     ${content}
                 </div>
                 <div class="modal-footer">
@@ -26,23 +26,36 @@ $.modal = function (options) {
     const ANIMATION_SPEED = 200
     const $modal = _createModal(options)
     let closing = false
+    let destroyed = false
 
-    const modalClose = document.querySelector('.modal-close')
-    const modalOverlay = document.querySelector('.modal-overlay')
-    const modalBody = document.querySelector('.modal-body')
-
-    const _destroy = () => $modal.remove()
-    const _close = () => {
-        $modal.classList.remove('open')
-        $modal.classList.add('hide')
-        setTimeout(() => {
-            $modal.classList.remove('hide')
-            closing = false
-        }, ANIMATION_SPEED)
+    const modal = {
+        open() {
+            if (destroyed) {
+                return console.log('Modal is destroyed')
+            }
+            !closing && $modal.classList.add('open')
+            !closing && modalWindow.classList.add('animate__animated', 'animate__lightSpeedInRight')
+        },
+        close() {
+            closing = true
+            $modal.classList.remove('open')
+            $modal.classList.add('hide')
+            setTimeout(() => {
+                $modal.classList.remove('hide')
+                closing = false
+            }, ANIMATION_SPEED)
+        }
     }
-
-    modalClose.addEventListener('click', _close)
-    modalOverlay.addEventListener('click', _close)
+    
+    const listener = event => {
+        if (event.target.dataset.close) {
+            modal.close()
+        }
+    }
+    
+    $modal.addEventListener('click', listener)
+    
+    const modalWindow = document.querySelector('.modal-window')
 
     /* Hooks */
     const onClose = new MutationObserver((mutations) => {
@@ -63,20 +76,29 @@ $.modal = function (options) {
         attributeOldValue: true
     });
 
-    return {
-        open() {
-            !closing && $modal.classList.add('open')
-            closing = true
-        },
-        close() {
-            closing && _close()
-        },
+    return Object.assign(modal, {
         destroy() {
-            modalClose.removeEventListener('click', _close)
-            _destroy()
+            $modal.parentNode.removeChild($modal)
+            $modal.removeEventListener('click', listener)
+            destroyed = true
         },
         setContent(html) {
-            modalBody.innerHTML = html
+            $modal.querySelector('[data-content]').innerHTML = html
         }
-    }
+    })
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

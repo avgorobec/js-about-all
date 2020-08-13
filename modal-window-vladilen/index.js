@@ -11,13 +11,19 @@ const options = {
     title: 'Перестроение топологии',
     closable: true,
     content: contentHtml,
-    width: '400px'
+    width: '600px',
+    footerButtons: [
+        {
+            text: 'Ok', type: 'primary', handler() {
+                console.log('Primary btn click')
+            }
+        },
+        {
+            text: 'Cancel', type: 'danger', handler() {
+                console.log('Danger btn click')
+            }
+        }
+    ]
 }
 
-const options2 = {
-    // title: '',
-    closable: true,
-    // content: contentHtml,
-    width: '400px'
-}
 const modal = $.modal(options)
