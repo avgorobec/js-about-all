@@ -1,17 +1,19 @@
-.vmodal {
-
+body {
+    z-index: 1;
 }
+
 .vmodal.open .modal-overlay,
 .vmodal.open .modal-window,
 .vmodal.hide .modal-overlay,
 .vmodal.hide .modal-window {
     opacity: 1;
-    z-index: 200;
+    display: block;
 }
 
-.modal-window, .modal-overlay {
+.modal-window,
+.modal-overlay {
     opacity: 0;
-    z-index: -1;
+    display: none;
 }
 
 .vmodal.open .modal-window {
