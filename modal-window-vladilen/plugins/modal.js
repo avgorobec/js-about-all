@@ -1,4 +1,39 @@
-function _createModal({title = 'Заголовок', closable = false, content = 'Content', width = '400px'}) {
+Element.prototype.appendAfter = function (element) {
+    element.parentNode.insertBefore(this, element.nextElementSibling)
+}
+
+function noop() {
+
+}
+
+function _createModalFooter(buttons = []) {
+    if (buttons.length === 0) {
+        return document.createElement('div')
+    }
+
+    const wrap = document.createElement('div')
+    wrap.classList.add('modal-footer')
+
+    buttons.forEach(btn => {
+        const $btn = document.createElement('button')
+        $btn.textContent = btn.text
+        $btn.classList.add('btn')
+        $btn.classList.add(`btn-${btn.type || 'secondary'}`)
+        $btn.onclick = btn.handler || noop
+
+        wrap.appendChild($btn)
+    })
+
+    return wrap
+}
+
+function _createModal({
+                          title = 'Заголовок',
+                          closable = false,
+                          content = 'Content',
+                          width = '400px',
+                          footerButtons = []
+                      }) {
     const modal = document.createElement('div')
 
     modal.classList.add('vmodal')
@@ -13,16 +48,18 @@ function _createModal({title = 'Заголовок', closable = false, content =
                     ${content}
                 </div>
                 <div class="modal-footer">
-                    <button>Ok</button>
-                    <button>Cancel</button>
+
                 </div>
             </div>
         </div>`)
+    const footer = _createModalFooter(footerButtons)
+    footer.appendAfter(modal.querySelector('[data-content]'))
     document.body.appendChild(modal)
     return modal
 }
 
 $.modal = function (options) {
+
     const ANIMATION_SPEED = 200
     const $modal = _createModal(options)
     let closing = false
@@ -46,20 +83,20 @@ $.modal = function (options) {
             }, ANIMATION_SPEED)
         }
     }
-    
+
     const listener = event => {
         if (event.target.dataset.close) {
             modal.close()
         }
     }
-    
+
     $modal.addEventListener('click', listener)
-    
+
     const modalWindow = document.querySelector('.modal-window')
 
     /* Hooks */
     const onClose = new MutationObserver((mutations) => {
-        mutations.forEach(function(mutation) {
+        mutations.forEach(function (mutation) {
             mutation.oldValue === 'vmodal open' && console.log('The Modal window closed')
         });
     });
@@ -68,7 +105,7 @@ $.modal = function (options) {
     });
 
     const onOpen = new MutationObserver((mutations) => {
-        mutations.forEach(function(mutation) {
+        mutations.forEach(function (mutation) {
             mutation.oldValue === 'vmodal' && console.log('The Modal window opened')
         });
     });
