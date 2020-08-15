@@ -47,9 +47,6 @@ function _createModal({
                 <div class="modal-body" data-content>
                     ${content}
                 </div>
-                <div class="modal-footer">
-
-                </div>
             </div>
         </div>`)
     const footer = _createModalFooter(footerButtons)
@@ -80,6 +77,9 @@ $.modal = function (options) {
             setTimeout(() => {
                 $modal.classList.remove('hide')
                 closing = false
+                if (typeof options.onClose === 'function') {
+                    options.onClose()
+                }
             }, ANIMATION_SPEED)
         }
     }
@@ -94,24 +94,6 @@ $.modal = function (options) {
 
     const modalWindow = document.querySelector('.modal-window')
 
-    /* Hooks */
-    const onClose = new MutationObserver((mutations) => {
-        mutations.forEach(function (mutation) {
-            mutation.oldValue === 'vmodal open' && console.log('The Modal window closed')
-        });
-    });
-    onClose.observe($modal, {
-        attributeOldValue: true
-    });
-
-    const onOpen = new MutationObserver((mutations) => {
-        mutations.forEach(function (mutation) {
-            mutation.oldValue === 'vmodal' && console.log('The Modal window opened')
-        });
-    });
-    onOpen.observe($modal, {
-        attributeOldValue: true
-    });
 
     return Object.assign(modal, {
         destroy() {
