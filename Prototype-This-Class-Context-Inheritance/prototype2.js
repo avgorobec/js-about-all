@@ -123,7 +123,7 @@ function bind(context, fun) {
     }
 }
 
-bind(person1, logPerson)()
+bind(person1, logPerson)
 
 
 
