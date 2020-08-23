@@ -12,14 +12,22 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          // style-loader
-          { loader: 'style-loader' },
-          // css-loader
+          {
+            loader: 'style-loader'
+          },
           {
             loader: 'css-loader'
           }
         ]
-      }
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
+      },
     ]
   },
   devServer: {
