@@ -8,8 +8,10 @@ const site = new Site('#site')
 
 const updateCallback = newBlock => {
     model.push(newBlock)
+    site.render(model)
 }
 
 new SideBar('#panel', updateCallback)
 
 site.render(model)
+
